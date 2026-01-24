@@ -328,49 +328,38 @@
         const textureCache = new Map();
 
         async function init() {
-
-            camera.position.set(0, 1.7, 5); // Start slightly inside
-            lookState.lon = -90; // Rotate 90 degrees to face the paintings
-
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x050505);
-            scene.fog = new THREE.FogExp2(0x050505, 0.02); // Lighter fog for better visibility
 
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(0, 1.7, 10);
+            // Position user to face the gallery immediately
+            camera.position.set(0, 1.7, 5); 
+            lookState.lon = 0; 
 
             renderer = new THREE.WebGLRenderer({ 
-            antialias: false, // Turn off for massive FPS boost on mobile
-            powerPreference: "high-performance",
-            precision: "mediump" // Lowers shader complexity for speed
+                antialias: false, // Performance boost
+                powerPreference: "high-performance",
+                precision: "mediump" 
             });
-            renderer.setPixelRatio(window.devicePixelRatio > 1 ? 1 : 1); // Force lower pixel density for speed
-            renderer.shadowMap.enabled = false; // Disable shadows entirely
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(1); // Keep it fast on mobile
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
 
             clock = new THREE.Clock();
 
-            // Optimized lighting setup
             setupGalleryLighting();
+            createGalleryArchitecture(); // Solid walls
 
-            // Create beautiful gallery architecture
-            createGalleryArchitecture();
-
-            // Pre-load images
+            // Load images - if CSV fails, it immediately uses fallback to prevent hanging
             const imageUrls = await fetchImageUrls();
-            
-            // Setup paintings with loading
             setupPaintings(imageUrls);
 
-            // Event listeners
-            window.addEventListener('resize', onWindowResize);
             setupControls();
 
-            // Show birthday message
-            document.getElementById('loader').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('loader').style.display = 'none';
-                document.getElementById('birthday-modal').style.display = 'flex';
-            }, 1000);
+            // FORCE HIDE LOADER
+            // This ensures even if an image fails, the user can still enter
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('birthday-modal').style.display = 'flex';
 
             animate();
         }
@@ -418,54 +407,41 @@
         }
 
         function createGalleryArchitecture() {
-            // Optimization: Use a single material for all walls to reduce draw calls
-            const wallMat = new THREE.MeshStandardMaterial({ 
-                color: 0xf5f5f5, 
-                roughness: 0.8, 
-                metalness: 0.0 
-            });
-            
+            const wallMat = new THREE.MeshStandardMaterial({ color: 0xf5f5f5, roughness: 1 });
             const totalLength = CONFIG.numRooms * CONFIG.roomLength;
-            const roomW = CONFIG.roomSize;
-            const roomH = CONFIG.wallHeight;
+            const w = CONFIG.roomSize;
+            const h = CONFIG.wallHeight;
 
-            // 1. ENCLOSURE (Floor, Ceiling, Side Walls)
-            // Floor
-            const floor = new THREE.Mesh(new THREE.PlaneGeometry(roomW, totalLength + 20), 
-                new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.2 }));
-            floor.rotation.x = -Math.PI / 2;
-            floor.position.z = -totalLength / 2 + 5;
+            // Floor (One solid piece)
+            const floor = new THREE.Mesh(new THREE.BoxGeometry(w + 10, 0.5, totalLength + 30), 
+                new THREE.MeshStandardMaterial({ color: 0x111111 }));
+            floor.position.set(0, -0.25, -totalLength / 2);
             scene.add(floor);
 
-            // Ceiling (Solid, no black void)
-            const ceil = new THREE.Mesh(new THREE.PlaneGeometry(roomW, totalLength + 20), 
-                new THREE.MeshStandardMaterial({ color: 0x111111 }));
-            ceil.rotation.x = Math.PI / 2;
-            ceil.position.y = roomH;
-            ceil.position.z = floor.position.z;
+            // Ceiling
+            const ceil = new THREE.Mesh(new THREE.BoxGeometry(w + 10, 0.5, totalLength + 30), 
+                new THREE.MeshStandardMaterial({ color: 0x0a0a0a }));
+            ceil.position.set(0, h + 0.25, -totalLength / 2);
             scene.add(ceil);
 
-            // Continuous Side Walls (Prevents flickering gaps)
-            const sideWallGeo = new THREE.PlaneGeometry(totalLength + 20, roomH);
+            // Left & Right Walls (Single long solid blocks)
+            const sideWallGeo = new THREE.BoxGeometry(1, h, totalLength + 30);
             const leftWall = new THREE.Mesh(sideWallGeo, wallMat);
-            leftWall.position.set(-roomW/2, roomH/2, floor.position.z);
-            leftWall.rotation.y = Math.PI / 2;
+            leftWall.position.set(-(w/2 + 0.5), h/2, -totalLength/2);
             scene.add(leftWall);
 
             const rightWall = new THREE.Mesh(sideWallGeo, wallMat);
-            rightWall.position.set(roomW/2, roomH/2, floor.position.z);
-            rightWall.rotation.y = -Math.PI / 2;
+            rightWall.position.set(w/2 + 0.5, h/2, -totalLength/2);
             scene.add(rightWall);
 
-            // End Walls
-            const endWallGeo = new THREE.PlaneGeometry(roomW, roomH);
+            // End Walls (The "Seal")
+            const endWallGeo = new THREE.BoxGeometry(w + 2, h, 1);
             const backWall = new THREE.Mesh(endWallGeo, wallMat);
-            backWall.position.set(0, roomH/2, -totalLength);
+            backWall.position.set(0, h/2, -totalLength - 5);
             scene.add(backWall);
 
             const frontWall = new THREE.Mesh(endWallGeo, wallMat);
-            frontWall.position.set(0, roomH/2, 10);
-            frontWall.rotation.y = Math.PI;
+            frontWall.position.set(0, h/2, 10);
             scene.add(frontWall);
         }
 
@@ -804,42 +780,32 @@
         function animate() {
             requestAnimationFrame(animate);
             
-            // Smooth Camera Rotation (Slightly dampened for low-end devices)
+            // Look Controls (Slightly dampened for smoothness)
             lookState.lat = Math.max(-85, Math.min(85, lookState.lat));
             const phi = THREE.MathUtils.degToRad(90 - lookState.lat);
             const theta = THREE.MathUtils.degToRad(lookState.lon);
-
             const target = new THREE.Vector3();
             target.setFromSphericalCoords(1, phi, theta).add(camera.position);
             camera.lookAt(target);
 
+            // Faster Joystick Movement (0.25 speed)
             if (moveState.forward !== 0 || moveState.right !== 0) {
-                focusedPainting = null; // Break focus if moving
-                
                 const direction = new THREE.Vector3();
                 camera.getWorldDirection(direction);
                 direction.y = 0;
                 direction.normalize();
 
                 const rightVec = new THREE.Vector3().crossVectors(camera.up, direction);
+                
+                camera.position.addScaledVector(direction, moveState.forward * 0.25);
+                camera.position.addScaledVector(rightVec, -moveState.right * 0.25);
 
-                // Movement
-                camera.position.addScaledVector(direction, moveState.forward * CONFIG.moveSpeed);
-                camera.position.addScaledVector(rightVec, -moveState.right * CONFIG.moveSpeed);
-
-                // 3. COLLISION SYSTEM (Unable to walk through walls)
-                const padding = 1.2; // Distance to keep from walls
-                const xLimit = (CONFIG.roomSize / 2) - padding;
-                const zLimitMax = 10 - padding;
-                const zLimitMin = -(CONFIG.numRooms * CONFIG.roomLength) + padding;
-
-                if (camera.position.x > xLimit) camera.position.x = xLimit;
-                if (camera.position.x < -xLimit) camera.position.x = -xLimit;
-                if (camera.position.z > zLimitMax) camera.position.z = zLimitMax;
-                if (camera.position.z < zLimitMin) camera.position.z = zLimitMin;
+                // Solid Wall Collision
+                const wallBuffer = 1.5;
+                camera.position.x = Math.max(-(CONFIG.roomSize/2 - wallBuffer), Math.min(CONFIG.roomSize/2 - wallBuffer, camera.position.x));
+                camera.position.z = Math.max(-(CONFIG.numRooms * CONFIG.roomLength), Math.min(8, camera.position.z));
             }
-            
-            // Performance: Only update what's visible
+
             renderer.render(scene, camera);
         }
 
