@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Happy Birthday Gallery</title>
+    <title>Aesthetic BTS Birthday Gallery</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --primary: #f8f9fa;
+            --primary: #fdfaf1; 
             --accent: #ff4d6d;
-            --glass: rgba(255, 255, 255, 0.1);
+            --glass: rgba(255, 255, 255, 0.05);
             --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            overflow: hidden; background-color: #000;
+            overflow: hidden; background-color: #0e0804;
             font-family: var(--font-main); touch-action: none;
         }
 
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #1a0a00; display: flex; flex-direction: column;
+            background: #1a1005; display: flex; flex-direction: column;
             justify-content: center; align-items: center; z-index: 1000;
             color: white;
         }
@@ -36,49 +36,36 @@
 
         #birthday-modal, #controls-tutorial {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+            background: rgba(14, 8, 4, 0.95); backdrop-filter: blur(10px);
             display: none; flex-direction: column; justify-content: center;
             align-items: center; z-index: 999; text-align: center; padding: 20px;
         }
 
         .modal-content, .tutorial-content {
             background: var(--glass); padding: 40px; border-radius: 24px;
-            border: 1px solid rgba(255,255,255,0.2); max-width: 400px;
+            border: 1px solid rgba(255,255,255,0.05); max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
 
-        .control-item {
-            display: flex; align-items: center; margin: 20px 0; padding: 15px;
-            background: rgba(255,255,255,0.05); border-radius: 12px; border-left: 4px solid var(--accent);
-        }
-
-        .control-icon {
-            width: 60px; height: 60px; background: rgba(255,77,109,0.2);
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            margin-right: 20px; font-size: 24px;
-        }
-
-        .control-text { text-align: left; flex: 1; }
-        .control-text h3 { margin: 0 0 5px 0; color: var(--accent); }
-        .control-text p { margin: 0; color: rgba(255,255,255,0.8); font-size: 0.9rem; }
-
-        h1 { color: var(--accent); font-size: 2.5rem; margin-bottom: 10px; }
-        p { color: white; margin-bottom: 25px; line-height: 1.6; }
+        h1 { color: #ff8fa3; font-size: 2.5rem; margin-bottom: 10px; text-shadow: 0 0 15px rgba(255,77,109,0.5); }
+        p { color: #ffe5d9; margin-bottom: 25px; line-height: 1.6; }
 
         button {
-            background: var(--accent); color: white; border: none;
+            background: #ff4d6d; color: white; border: none;
             padding: 15px 35px; font-size: 1.1rem; border-radius: 30px;
-            cursor: pointer; font-weight: 600;
+            cursor: pointer; font-weight: 600; transition: transform 0.2s;
         }
+        button:hover { transform: scale(1.05); }
 
         #joystick-container {
             position: fixed; bottom: 40px; left: 40px; width: 100px; height: 100px;
-            background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1);
             border-radius: 50%; display: none; z-index: 100;
         }
 
         #joystick-knob {
             position: absolute; top: 50%; left: 50%; width: 40px; height: 40px;
-            background: var(--accent); border-radius: 50%; transform: translate(-50%, -50%);
+            background: #ff4d6d; border-radius: 50%; transform: translate(-50%, -50%);
         }
 
         #look-touch-area {
@@ -88,35 +75,34 @@
 
         .instructions {
             position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            color: white; font-size: 0.8rem; pointer-events: none; z-index: 101;
-            background: rgba(0,0,0,0.5); padding: 8px 16px; border-radius: 20px;
+            color: #ffd8be; font-size: 0.8rem; pointer-events: none; z-index: 101;
+            background: rgba(0,0,0,0.8); padding: 8px 16px; border-radius: 20px;
         }
     </style>
 </head>
 <body>
 
-    <div id="loader"><div class="spinner"></div><p style="color:white; margin-top:10px;">Setting up the party...</p></div>
+    <div id="loader"><div class="spinner"></div><p style="margin-top:10px;">Lighting the candles...</p></div>
 
     <div id="birthday-modal">
         <div class="modal-content">
-            <h1>Happy Birthday! 🎉</h1>
-            <p>Welcome to your personal art gallery! I've created this virtual space to celebrate your special day with beautiful memories.</p>
-            <button id="start-btn">Enter Gallery</button>
+            <h1>Happy 19th! 🎂</h1>
+            <p>Step into your private, moodlit gallery.</p>
+            <button id="start-btn">Enter My Gallery</button>
         </div>
     </div>
 
     <div id="controls-tutorial">
         <div class="tutorial-content">
-            <h2 style="color: var(--accent);">How to Explore</h2>
-            <div class="control-item"><div class="control-icon">🎮</div><div class="control-text"><h3>Move & Look</h3><p>Left: Joystick to walk. Right: Drag to look.</p></div></div>
-            <div class="control-item"><div class="control-icon">🔍</div><div class="control-text"><h3>Inspect Art</h3><p>Tap a painting to glide closer.</p></div></div>
+            <h2 style="color: #ff8fa3;">How to Explore</h2>
+            <p style="font-size: 0.9rem;">Move with the left joystick, look around by dragging the right side of the screen.</p>
             <button id="tutorial-continue" style="width: 100%;">Let's Go!</button>
         </div>
     </div>
 
     <div id="joystick-container"><div id="joystick-knob"></div></div>
     <div id="look-touch-area"></div>
-    <div class="instructions">Walk to the end for a surprise! 🎂</div>
+    <div class="instructions">Enjoy the atmosphere ✨</div>
     <audio id="bg-music" loop><source src="https://www.chosic.com/wp-content/uploads/2021/04/Lofi-Study-Music.mp3" type="audio/mpeg"></audio>
 
     <script>
@@ -125,50 +111,43 @@
             moveSpeed: 0.22,
             lookSensitivity: 0.2,
             roomSize: 22,
-            roomLength: 30,
-            numRooms: 3,
-            wallHeight: 9
+            roomLength: 20, 
+            numRooms: 2,    
+            wallHeight: 10,
+            aestheticWall: 0x221a16, // DARKER: Deep espresso charcoal
+            warmLight: 0xffd1a9
         };
 
-        const FALLBACK_IMAGES = Array.from({length: 30}, (_, i) => `https://picsum.photos/id/${10 + i}/800/800`);
-
-        let scene, camera, renderer, clock;
-        let paintings = [], balloons = [], candleLights = [];
+        let scene, camera, renderer, clock, birthdaySign;
+        let paintings = [], balloons = [], lights = [];
         let moveState = { forward: 0, right: 0 };
         let lookState = { lat: 0, lon: 180 }; 
         let joystickActive = false, isLooking = false;
-        let lastTouchX = 0, lastTouchY = 0, focusedPainting = null;
+        let lastTouchX = 0, lastTouchY = 0;
 
         async function init() {
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x1a0f00); 
+            scene.background = new THREE.Color(0x0e0804); // Darker background
+            scene.fog = new THREE.FogExp2(0x0e0804, 0.02);
 
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             camera.position.set(0, 1.7, 8); 
 
-            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+            renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            document.getElementById('canvas-container').appendChild(renderer.domElement);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            document.body.appendChild(renderer.domElement);
 
             clock = new THREE.Clock();
 
-            // BRIGHTER CANDLELIGHT
-            scene.add(new THREE.AmbientLight(0xffaa66, 0.9)); 
-
-            for(let i=0; i<CONFIG.numRooms + 1; i++) {
-                const light = new THREE.PointLight(0xffcc88, 2.0, 50);
-                light.position.set(0, 5, -(i * CONFIG.roomLength));
-                scene.add(light);
-                candleLights.push(light);
-            }
+            // Lower Ambient Light for moodier effect
+            scene.add(new THREE.AmbientLight(CONFIG.warmLight, 0.35)); 
 
             createGalleryArchitecture();
-            createBirthdaySign();
+            createCakeTable();
             createBalloons();
-            
-            const urls = await fetchImageUrls();
-            setupPaintings(urls);
+            createBirthdaySign();
+            setupPaintings();
             setupControls();
 
             document.getElementById('loader').style.display = 'none';
@@ -176,97 +155,143 @@
             animate();
         }
 
-        async function fetchImageUrls() {
-            try {
-                if (CONFIG.csvUrl.includes('PASTE')) throw new Error();
-                const r = await fetch(CONFIG.csvUrl);
-                const d = await r.text();
-                return d.split('\n').map(l => l.trim()).filter(u => u.startsWith('http'));
-            } catch { return FALLBACK_IMAGES; }
-        }
-
         function createGalleryArchitecture() {
-            const wallMat = new THREE.MeshStandardMaterial({ color: 0x443322, roughness: 0.7 }); 
-            const floorMat = new THREE.MeshStandardMaterial({ color: 0x221100, roughness: 0.2 }); 
-            const ceilMat = new THREE.MeshStandardMaterial({ color: 0x110800 }); 
+            const wallMat = new THREE.MeshStandardMaterial({ color: CONFIG.aestheticWall, roughness: 0.8 });
+            const floorMat = new THREE.MeshStandardMaterial({ color: 0x1a1512, roughness: 1.0, metalness: 0.0 }); 
             
             const len = CONFIG.numRooms * CONFIG.roomLength;
             const w = CONFIG.roomSize;
             const h = CONFIG.wallHeight;
+            const endZ = -len;
 
-            // Enclosed Floor & Ceiling
-            const floor = new THREE.Mesh(new THREE.BoxGeometry(w+2, 0.2, len+50), floorMat);
+            const floor = new THREE.Mesh(new THREE.BoxGeometry(w+2, 0.2, len+20), floorMat);
             floor.position.set(0, -0.1, -len/2 + 5);
             scene.add(floor);
 
-            const ceiling = new THREE.Mesh(new THREE.BoxGeometry(w+2, 0.2, len+50), ceilMat);
+            const ceiling = new THREE.Mesh(new THREE.BoxGeometry(w+2, 0.2, len+20), wallMat);
             ceiling.position.set(0, h, -len/2 + 5);
             scene.add(ceiling);
 
-            // Side Walls
-            const leftW = new THREE.Mesh(new THREE.BoxGeometry(0.8, h, len+50), wallMat);
+            const leftW = new THREE.Mesh(new THREE.BoxGeometry(0.8, h, len+20), wallMat);
             leftW.position.set(-w/2, h/2, -len/2 + 5);
             scene.add(leftW);
 
-            const rightW = new THREE.Mesh(new THREE.BoxGeometry(0.8, h, len+50), wallMat);
+            const rightW = new THREE.Mesh(new THREE.BoxGeometry(0.8, h, len+20), wallMat);
             rightW.position.set(w/2, h/2, -len/2 + 5);
             scene.add(rightW);
 
-            const frontW = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.8), wallMat);
-            frontW.position.set(0, h/2, 12);
-            scene.add(frontW);
+            const backW = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.8), wallMat);
+            backW.position.set(0, h/2, endZ);
+            scene.add(backW);
+
+            // Stronger PointLights to create pools of light on dark walls
+            for(let i=0; i<4; i++) {
+                const pLight = new THREE.PointLight(CONFIG.warmLight, 1.8, 25);
+                pLight.position.set(0, 7, -(i * 12));
+                scene.add(pLight);
+                lights.push(pLight);
+            }
+        }
+
+        function createCakeTable() {
+            const endZ = -(CONFIG.numRooms * CONFIG.roomLength) + 5; 
+            const tableGroup = new THREE.Group();
+            
+            const top = new THREE.Mesh(new THREE.BoxGeometry(5, 0.2, 3), new THREE.MeshStandardMaterial({color: 0x3d2b1f}));
+            top.position.y = 1;
+            tableGroup.add(top);
+
+            const cake = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 0.7, 32), new THREE.MeshStandardMaterial({color: 0xffd1dc}));
+            cake.position.y = 1.45;
+            tableGroup.add(cake);
+
+            const canvas = document.createElement('canvas');
+            canvas.width = 256; canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = "#ff4d6d";
+            ctx.font = "bold 160px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("19", 128, 180);
+            
+            const candleTex = new THREE.CanvasTexture(canvas);
+            const candle = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({map: candleTex, transparent: true, side: THREE.DoubleSide}));
+            candle.position.y = 2.2;
+            tableGroup.add(candle);
+
+            tableGroup.position.set(0, 0, endZ);
+            scene.add(tableGroup);
+
+            const cakeLight = new THREE.PointLight(0xffaa00, 3, 12);
+            cakeLight.position.set(0, 2.5, endZ);
+            scene.add(cakeLight);
         }
 
         function createBirthdaySign() {
             const canvas = document.createElement('canvas');
-            canvas.width = 1024; canvas.height = 512;
+            canvas.width = 1024; canvas.height = 256;
             const ctx = canvas.getContext('2d');
-            ctx.fillStyle = 'rgba(0,0,0,0)';
-            ctx.fillRect(0,0,1024,512);
-            ctx.fillStyle = '#ff4d6d';
-            ctx.font = 'bold 120px Segoe UI';
+            ctx.font = 'bold 120px Segoe UI'; 
             ctx.textAlign = 'center';
-            ctx.shadowBlur = 30;
-            ctx.shadowColor = '#ff4d6d';
-            ctx.fillText('HAPPY BIRTHDAY!', 512, 256);
+            ctx.fillStyle = 'white';
+            ctx.fillText('HAPPY BIRTHDAY!', 512, 150);
             
             const tex = new THREE.CanvasTexture(canvas);
-            const mat = new THREE.MeshBasicMaterial({map: tex, transparent: true});
-            const mesh = new THREE.Mesh(new THREE.PlaneGeometry(12, 6), mat);
-            mesh.position.set(0, 4.5, -(CONFIG.numRooms * CONFIG.roomLength) - 5);
-            scene.add(mesh);
+            
+            birthdaySign = new THREE.Group();
+            for(let i=0; i<8; i++) {
+                const mat = new THREE.MeshBasicMaterial({map: tex, transparent: true, opacity: i === 7 ? 1 : 0.2});
+                const layer = new THREE.Mesh(new THREE.PlaneGeometry(14, 3.5), mat);
+                layer.position.z = i * 0.08; // Deeper 3D effect
+                birthdaySign.add(layer);
+            }
+            
+            birthdaySign.position.set(0, 7.5, -(CONFIG.numRooms * CONFIG.roomLength) + 0.5);
+            scene.add(birthdaySign);
         }
 
         function createBalloons() {
-            const colors = [0xff4d6d, 0xffb703, 0x8ecae6, 0x219ebc];
-            for(let i=0; i<15; i++) {
-                const group = new THREE.Group();
+            const colors = [0xffadad, 0xffd6a5, 0xfdffb6, 0xcaffbf, 0x9bf6ff];
+            const tableZ = -(CONFIG.numRooms * CONFIG.roomLength) + 5;
+            
+            for(let i=0; i<40; i++) {
+                const bGroup = new THREE.Group();
                 const ball = new THREE.Mesh(
-                    new THREE.SphereGeometry(0.5, 32, 32),
-                    new THREE.MeshStandardMaterial({color: colors[i % colors.length], metalness: 0.3, roughness: 0.1})
+                    new THREE.SphereGeometry(0.5, 24, 24),
+                    new THREE.MeshStandardMaterial({color: colors[i % colors.length], roughness: 0.1, metalness: 0.5}) // Shinier balloons
                 );
-                group.add(ball);
-                group.position.set((Math.random()-0.5)*15, Math.random()*4 + 2, -Math.random()*80);
-                scene.add(group);
-                balloons.push({obj: group, speed: Math.random()*0.02 + 0.01, offset: Math.random()*Math.PI*2});
+                bGroup.add(ball);
+
+                const points = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -5, 0)];
+                const stringGeo = new THREE.BufferGeometry().setFromPoints(points);
+                const string = new THREE.Line(stringGeo, new THREE.LineBasicMaterial({color: 0x444444}));
+                bGroup.add(string);
+
+                bGroup.position.set(
+                    (Math.random()-0.5)*15, 
+                    Math.random()*5 + 3, 
+                    tableZ + (Math.random()-0.5)*10
+                );
+                scene.add(bGroup);
+                balloons.push({obj: bGroup, speed: 0.01 + Math.random()*0.02, offset: Math.random()*Math.PI*2});
             }
         }
 
-        function setupPaintings(urls) {
+        function setupPaintings() {
             const loader = new THREE.TextureLoader();
-            urls.forEach((url, i) => {
+            const fallbacks = Array.from({length: 24}, (_, i) => `https://picsum.photos/id/${10+i}/600/800`);
+            
+            fallbacks.forEach((url, i) => {
                 loader.load(url, (tex) => {
-                    const aspect = tex.image.width / tex.image.height;
-                    const h = 4.0, w = h * aspect;
+                    const h = 3.5, w = 2.8;
                     const frame = new THREE.Mesh(new THREE.BoxGeometry(w+0.3, h+0.3, 0.15), new THREE.MeshStandardMaterial({color:0x111111}));
                     const art = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({map:tex}));
                     art.position.z = 0.08;
                     frame.add(art);
+                    
                     const side = i % 2 === 0 ? 1 : -1;
-                    frame.position.set((CONFIG.roomSize/2 - 0.5) * side, 4, - (i * 6) - 5);
+                    frame.position.set((CONFIG.roomSize/2 - 0.5) * side, 4, - (i * 1.5) - 3);
                     frame.rotation.y = (Math.PI/2) * -side;
                     scene.add(frame);
-                    paintings.push(frame);
                 });
             });
         }
@@ -276,13 +301,12 @@
                 document.getElementById('birthday-modal').style.display = 'none';
                 document.getElementById('controls-tutorial').style.display = 'flex';
             };
-
             document.getElementById('tutorial-continue').onclick = () => {
                 document.getElementById('controls-tutorial').style.display = 'none';
                 document.getElementById('joystick-container').style.display = 'block';
                 document.getElementById('look-touch-area').style.display = 'block';
                 document.getElementById('bg-music').play().catch(()=>{});
-                confetti({ particleCount: 150, spread: 70 });
+                confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
             };
 
             const lookArea = document.getElementById('look-touch-area');
@@ -293,6 +317,7 @@
                 lookState.lat -= (e.touches[0].clientY - lastTouchY) * CONFIG.lookSensitivity;
                 lastTouchX = e.touches[0].clientX; lastTouchY = e.touches[0].clientY;
             };
+            lookArea.ontouchend = () => isLooking = false;
 
             const joy = document.getElementById('joystick-container');
             const knob = document.getElementById('joystick-knob');
@@ -308,64 +333,46 @@
                 moveState.right = Math.cos(angle) * (dist/40);
             };
             joy.ontouchend = () => { moveState.forward = 0; moveState.right = 0; knob.style.transform='translate(-50%, -50%)'; joystickActive=false; };
-
-            window.onclick = (e) => {
-                if(joystickActive) return;
-                const mouse = new THREE.Vector2((e.clientX/window.innerWidth)*2-1, -(e.clientY/window.innerHeight)*2+1);
-                const ray = new THREE.Raycaster();
-                ray.setFromCamera(mouse, camera);
-                const hits = ray.intersectObjects(paintings, true);
-                if(hits.length > 0) {
-                    let p = hits[0].object;
-                    while(p.parent && !paintings.includes(p)) p = p.parent;
-                    focusedPainting = p;
-                } else { focusedPainting = null; }
-            };
         }
 
         function animate() {
             requestAnimationFrame(animate);
             const time = clock.getElapsedTime();
 
-            // COZY FLICKER
-            candleLights.forEach((light, i) => {
-                light.intensity = 2.0 + Math.sin(time * 3 + i) * 0.4 + (Math.random() * 0.15);
-            });
+            if(birthdaySign) {
+                birthdaySign.children.forEach((layer, i) => {
+                    layer.material.color.setHSL((time * 0.1) % 1, 0.8, 0.6);
+                });
+            }
 
-            // FLOATING BALLOONS
             balloons.forEach(b => {
                 b.obj.position.y += Math.sin(time + b.offset) * 0.005;
-                b.obj.rotation.z = Math.sin(time * 0.5 + b.offset) * 0.1;
+            });
+
+            lights.forEach((l, i) => {
+                l.intensity = 1.8 + Math.sin(time * 2 + i) * 0.3;
             });
 
             lookState.lat = Math.max(-85, Math.min(85, lookState.lat));
             const target = new THREE.Vector3().setFromSphericalCoords(1, THREE.MathUtils.degToRad(90 - lookState.lat), THREE.MathUtils.degToRad(lookState.lon)).add(camera.position);
             camera.lookAt(target);
 
-            if (focusedPainting) {
-                const viewPos = new THREE.Vector3(0, 0, 4.5).applyQuaternion(focusedPainting.quaternion).add(focusedPainting.position);
-                viewPos.y = 1.7;
-                camera.position.lerp(viewPos, 0.05);
-                if(Math.abs(moveState.forward) > 0.1) focusedPainting = null;
-            } else {
-                const dir = new THREE.Vector3();
-                camera.getWorldDirection(dir);
-                dir.y = 0; dir.normalize();
-                const side = new THREE.Vector3().crossVectors(camera.up, dir);
-                camera.position.addScaledVector(dir, moveState.forward * CONFIG.moveSpeed);
-                camera.position.addScaledVector(side, -moveState.right * CONFIG.moveSpeed);
+            const dir = new THREE.Vector3();
+            camera.getWorldDirection(dir);
+            dir.y = 0; dir.normalize();
+            const side = new THREE.Vector3().crossVectors(camera.up, dir);
+            camera.position.addScaledVector(dir, moveState.forward * CONFIG.moveSpeed);
+            camera.position.addScaledVector(side, -moveState.right * CONFIG.moveSpeed);
 
-                const limitX = CONFIG.roomSize/2 - 1.5;
-                camera.position.x = Math.max(-limitX, Math.min(limitX, camera.position.x));
-                camera.position.z = Math.max(-(CONFIG.numRooms * CONFIG.roomLength) - 5, Math.min(8, camera.position.z));
-                camera.position.y = 1.7;
-            }
+            camera.position.x = Math.max(-8, Math.min(8, camera.position.x));
+            camera.position.z = Math.max(-(CONFIG.numRooms * CONFIG.roomLength) - 5, Math.min(8, camera.position.z));
+            camera.position.y = 1.7;
+
             renderer.render(scene, camera);
         }
 
         window.onload = init;
         window.onresize = () => { camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); };
     </script>
-    <div id="canvas-container"></div>
 </body>
 </html>
