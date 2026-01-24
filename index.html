@@ -328,6 +328,10 @@
         const textureCache = new Map();
 
         async function init() {
+
+            camera.position.set(0, 1.7, 5); // Start slightly inside
+            lookState.lon = -90; // Rotate 90 degrees to face the paintings
+
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x050505);
             scene.fog = new THREE.FogExp2(0x050505, 0.02); // Lighter fog for better visibility
